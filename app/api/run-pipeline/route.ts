@@ -23,19 +23,34 @@ export async function POST(req: NextRequest) {
 
     const factSheet = extractData.factSheet;
 
+    const factSheetText = `
+Product: ${factSheet.product_name}
+
+Value Proposition:
+${factSheet.primary_value_proposition}
+
+Target Audience:
+${factSheet.target_audience}
+
+Core Features:
+${factSheet.core_features?.join(", ")}
+`;
+
     // 🔹 STEP 1: Call Copywriter
     const copywriterRes = await fetch("http://localhost:3000/api/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ factSheet }),
+      body: JSON.stringify({
+        sourceText: factSheetText, // ✅ FIXED
+      }),
     });
 
     const copywriterData = await copywriterRes.json();
 
     if (!copywriterData.success) {
-      console.log("❌ Copywriter failed");
+      console.log("❌ Copywriter failed", copywriterData);
       return NextResponse.json({
         success: false,
         step: "copywriter_failed",

@@ -1,68 +1,79 @@
 import { NextRequest, NextResponse } from "next/server";
-import { copywriterSystemPrompt } from "@/lib/agents/copywriterPrompt";
-import { copywriterExamples } from "@/lib/agents/copywriterExamples";
-import { ContentOutput } from "@/types/contentOutput";
+import Groq from "groq-sdk";
+
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY!,
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const { factSheet } = await req.json();
+    const { sourceText, type } = await req.json();
 
-    const userPrompt = `
-${copywriterExamples}
-
-## FACT-SHEET:
-${JSON.stringify(factSheet, null, 2)}
-`;
-
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: copywriterSystemPrompt },
-            { role: "user", content: userPrompt },
-          ],
-          temperature: 0.7,
-        }),
-      },
-    );
-
-    const data = await response.json();
-    console.log("FULL GROQ RESPONSE:", JSON.stringify(data, null, 2));
-
-    if (!data.choices || !data.choices.length) {
+    if (!sourceText) {
       return NextResponse.json({
         success: false,
-        error: "Invalid response from Groq",
-        fullResponse: data, // 👈 THIS HELPS DEBUG
+        error: "Missing sourceText",
       });
     }
 
-    const rawOutput = data.choices[0].message.content;
+    // 🧠 Dynamic prompt based on type
+    let prompt = "";
 
-// 🧹 Extract JSON part only
-const jsonStart = rawOutput.indexOf("{");
-const jsonEnd = rawOutput.lastIndexOf("}") + 1;
+    if (type === "blog") {
+      prompt = `Write a high-quality blog post based on this:\n\n${sourceText}`;
+    } else if (type === "social_thread") {
+      prompt = `Create a Twitter/X thread (5-7 posts) based on this:\n\n${sourceText}`;
+    } else if (type === "email") {
+      prompt = `Write a marketing email based on this:\n\n${sourceText}`;
+    } else {
+      // 🔥 FULL GENERATION
+      prompt = `
+      Based on the following document, generate:
+      1. A blog post
+      2. A social media thread (5-7 posts)
+      3. A marketing email
 
-const cleanJson = rawOutput.slice(jsonStart, jsonEnd);
+      Return JSON:
+      {
+        "blog": "...",
+        "social_thread": ["...", "..."],
+        "email": "..."
+      }
 
-let parsed;
+      Document:
+      ${sourceText}
+      `;
+    }
 
-try {
-  parsed = JSON.parse(cleanJson);
-} catch (err) {
-  return NextResponse.json({
-    success: false,
-    error: "Still invalid JSON",
-    rawOutput,
-  });
-}
+    const result = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      response_format: type ? undefined : { type: "json_object" },
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const content = result.choices[0].message.content;
+
+    if (!content) throw new Error("Empty response");
+
+    // ✅ SECTION MODE
+    if (type) {
+      return NextResponse.json({
+        success: true,
+        data:
+          type === "social_thread"
+            ? content.split("\n").filter(Boolean)
+            : content,
+      });
+    }
+
+    // ✅ FULL MODE
+    const parsed = JSON.parse(content);
 
     return NextResponse.json({
       success: true,
