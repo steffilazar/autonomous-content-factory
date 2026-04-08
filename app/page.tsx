@@ -8,24 +8,19 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
 export default function AgentRoom() {
-  // [UNCHANGED] All useState hooks and their setters stay identical
   const [input, setInput] = useState("");
   const [logs, setLogs] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [approved, setApproved] = useState<any>({});
   const [loadingStep, setLoadingStep] = useState<string | null>(null);
-  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
 
-  // [UX FIX] for the log auto-scroll useRef/useEffect addition
   const logsEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
 
-  // [UNCHANGED]
   const addLog = (msg: string) => setLogs((prev) => [...prev, msg]);
 
-  // [UNCHANGED]
   const handleFileUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -35,7 +30,6 @@ export default function AgentRoom() {
     reader.readAsText(file);
   };
 
-  // [UNCHANGED]
   const runPipeline = async () => {
     if (!input.trim()) return alert("Upload or paste a document first");
 
@@ -67,7 +61,6 @@ export default function AgentRoom() {
     setLoadingStep(null);
   };
 
-  // [UNCHANGED]
   const regenerateSection = async (type: string) => {
     addLog(`🔁 Regenerating ${type}...`);
 
@@ -91,7 +84,6 @@ export default function AgentRoom() {
     }
   };
 
-  // [UNCHANGED]
   const approveSection = (type: string) => {
     setApproved((prev: any) => ({
       ...prev,
@@ -100,7 +92,6 @@ export default function AgentRoom() {
     addLog(`✅ ${type} approved`);
   };
 
-  // [UNCHANGED]
   const exportZip = async () => {
     const zip = new JSZip();
 
@@ -118,52 +109,23 @@ export default function AgentRoom() {
     saveAs(blob, "campaign-kit.zip");
   };
 
-  // [UNCHANGED]
   const copyToClipboard = () => {
     const data = JSON.stringify(result.final, null, 2);
     navigator.clipboard.writeText(data);
     addLog("📋 Copied to clipboard");
   };
 
-  // [UNCHANGED]
   const agents = [
     { name: "Researcher", key: "researcher", icon: "🔍" },
     { name: "Copywriter", key: "copywriter", icon: "✍️" },
     { name: "Editor", key: "editor", icon: "🎯" },
   ];
 
-  // [UI ONLY] CSS variable definitions and page layout changes
   return (
-    <div className="min-h-screen p-6 md:p-10 font-syne" style={{ 
-      backgroundColor: 'var(--bg-base)', 
-      color: 'var(--text-primary)',
-      /* Setting inline CSS variables here so they scope to the component */
-      ['--bg-base' as any]: '#0a0a0f',
-      ['--bg-surface' as any]: '#111118',
-      ['--bg-elevated' as any]: '#1a1a24',
-      ['--border' as any]: '#2a2a3a',
-      ['--accent' as any]: '#6c63ff',
-      ['--accent-glow' as any]: 'rgba(108, 99, 255, 0.3)',
-      ['--text-primary' as any]: '#f0f0f8',
-      ['--text-muted' as any]: '#6b6b80',
-      ['--success' as any]: '#22c55e',
-      ['--warning' as any]: '#f59e0b',
-    }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Syne:wght@400;700&display=swap');
-        .font-syne { font-family: 'Syne', sans-serif; }
-        .font-dm-mono { font-family: 'DM Mono', monospace; }
-        .glow-hover:hover { box-shadow: 0 0 15px var(--accent-glow); }
-        .log-scanline {
-          background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-          background-size: 100% 2px, 3px 100%;
-          pointer-events: none;
-        }
-      `}} />
-
+    <div className="min-h-screen p-6 md:p-10 font-syne" style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* [UI ONLY] 1. Page Header */}
+        {/* Page Header */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <motion.div 
@@ -179,7 +141,7 @@ export default function AgentRoom() {
           <div className="w-full h-px" style={{ background: 'linear-gradient(90deg, var(--accent) 0%, transparent 100%)', opacity: 0.3, boxShadow: '0 1px 3px var(--accent-glow)' }} />
         </div>
 
-        {/* [UI ONLY] 2. Upload Card */}
+        {/* Upload Card */}
         <Card style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
           <CardContent className="p-6 space-y-4">
             <div className="relative border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center transition-colors hover:border-[var(--accent)]" style={{ borderColor: 'var(--border)' }}>
@@ -219,10 +181,9 @@ export default function AgentRoom() {
           </CardContent>
         </Card>
 
-        {/* [UI ONLY] 3. Agent Cards (the 3-column grid) */}
+        {/* Agent Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {agents.map((a) => (
-            // [UNCHANGED] The existing framer-motion opacity pulse must stay on the wrapping div
             <motion.div key={a.key} animate={{ opacity: loadingStep === a.key ? [0.5,1,0.5] : 1 }} transition={{ repeat: Infinity, duration: 1.5 }}>
               <Card className="rounded-xl overflow-hidden border" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
                 <CardContent className="p-6 flex flex-col items-center text-center gap-3">
@@ -247,46 +208,20 @@ export default function AgentRoom() {
           ))}
         </div>
 
-        {/* [UI ONLY] 4. Preview Toggle (Desktop / Mobile) & Outputs */}
-        <div className="flex justify-center">
-          <div className="inline-flex p-1 rounded-full border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
-            <button
-              onClick={() => setPreviewMode("desktop")}
-              className={`px-6 py-2 rounded-full font-syne text-sm font-bold uppercase transition-colors ${previewMode === "desktop" ? "text-white" : ""}`}
-              style={{ backgroundColor: previewMode === "desktop" ? 'var(--accent)' : 'transparent', color: previewMode === "desktop" ? '#fff' : 'var(--text-muted)' }}
-            >
-              Desktop
-            </button>
-            <button
-              onClick={() => setPreviewMode("mobile")}
-              className={`px-6 py-2 rounded-full font-syne text-sm font-bold uppercase transition-colors ${previewMode === "mobile" ? "text-white" : ""}`}
-              style={{ backgroundColor: previewMode === "mobile" ? 'var(--accent)' : 'transparent', color: previewMode === "mobile" ? '#fff' : 'var(--text-muted)' }}
-            >
-              Mobile
-            </button>
-          </div>
-        </div>
-
-        {/* [UI ONLY] 5. Output Cards with Device Frames for Responsive Preview */}
+        {/* Output Cards with Browser Frame */}
         {result && (
           <div className="transition-all duration-500 mt-8">
-            <div className={`mx-auto ${previewMode === "mobile" ? "w-[380px] border-[12px] border-b-[24px] rounded-[3rem] shadow-2xl relative" : "w-full border rounded-xl shadow-2xl"} overflow-hidden`} style={previewMode === "mobile" ? { borderColor: '#1a1a24' } : { borderColor: 'var(--border)' }}>
+            <div className="mx-auto w-full border rounded-xl shadow-2xl overflow-hidden" style={{ borderColor: 'var(--border)' }}>
               
               {/* Device Header/Notch */}
-              {previewMode === "mobile" ? (
-                <div className="absolute top-0 inset-x-0 h-7 flex justify-center z-50 pointer-events-none pt-1">
-                  <div className="w-32 h-6 rounded-3xl" style={{ backgroundColor: '#1a1a24' }}></div>
-                </div>
-              ) : (
-                <div className="h-10 flex items-center px-4 gap-2 border-b" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff5f56' }}></div>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ffbd2e' }}></div>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#27c93f' }}></div>
-                  <div className="mx-auto rounded font-dm-mono text-xs px-16 py-1 relative -left-8" style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-muted)' }}>preview.agent</div>
-                </div>
-              )}
+              <div className="h-10 flex items-center px-4 gap-2 border-b" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff5f56' }}></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ffbd2e' }}></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#27c93f' }}></div>
+                <div className="mx-auto rounded font-dm-mono text-xs px-16 py-1 relative -left-8" style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-muted)' }}>preview.agent</div>
+              </div>
 
-              <div className={`overflow-y-auto custom-scrollbar ${previewMode === "mobile" ? "h-[700px] p-5 pt-12 space-y-6" : "max-h-[800px] p-8 space-y-6"}`} style={{ backgroundColor: 'var(--bg-base)' }}>
+              <div className="overflow-y-auto custom-scrollbar max-h-[800px] p-8 space-y-6" style={{ backgroundColor: 'var(--bg-base)' }}>
                 {['blog', 'social_thread', 'email'].map((type) => (
                   <Card key={type} className="border-l-[3px] shadow-lg rounded-xl flex-shrink-0" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)', borderLeftColor: 'var(--accent)' }}>
                     <CardContent className="p-6 space-y-4">
@@ -301,7 +236,7 @@ export default function AgentRoom() {
                         )}
                       </div>
                       
-                      <div className={`font-dm-mono ${previewMode === "mobile" ? "text-xs max-h-64" : "text-sm max-h-96"} overflow-y-auto pr-2 custom-scrollbar transition-all duration-500`} style={{ color: 'var(--text-muted)' }}>
+                      <div className="font-dm-mono text-sm max-h-96 overflow-y-auto pr-2 custom-scrollbar transition-all duration-500" style={{ color: 'var(--text-muted)' }}>
                         {type === "social_thread" 
                           ? result.final.social_thread.map((p:string, i:number) => <p key={i} className="mb-4">{p}</p>)
                           : <p className="whitespace-pre-wrap">{result.final[type]}</p>
@@ -340,7 +275,7 @@ export default function AgentRoom() {
                   </Card>
                 ))}
 
-                {/* [UI ONLY] 6. Export / Copy Buttons Row */}
+                {/* Export / Copy Buttons Row */}
                 <div className="flex gap-4 pt-6 mt-8" style={{ borderTop: '1px solid var(--border)' }}>
                   <Button 
                     onClick={exportZip}
@@ -364,7 +299,7 @@ export default function AgentRoom() {
           </div>
         )}
 
-        {/* [UI ONLY] 7. Logs Panel */}
+        {/* Logs Panel */}
         <Card style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
           <CardContent className="p-0 flex flex-col h-48 overflow-hidden rounded-xl border" style={{ borderColor: 'var(--border)' }}>
             <div className="px-4 py-2 border-b flex items-center gap-2" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-elevated)' }}>
@@ -379,7 +314,6 @@ export default function AgentRoom() {
                     <span className="opacity-50 mr-2">{'>'}</span>{l}
                   </p>
                 ))}
-                {/* [UX FIX] */}
                 <div ref={logsEndRef} />
               </div>
             </div>
@@ -387,23 +321,6 @@ export default function AgentRoom() {
         </Card>
 
       </div>
-      
-      <style dangerouslySetInnerHTML={{ __html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: var(--bg-elevated);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--border);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: var(--text-muted);
-        }
-      `}} />
     </div>
   );
 }

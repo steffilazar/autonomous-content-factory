@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Autonomous Content Factory
 
-## Getting Started
+## Project Title
 
-First, run the development server:
+Autonomous Content Factory
+
+---
+
+## The Problem
+
+Creating content for multiple platforms such as blogs, social media, and email is time-consuming and repetitive. Teams often struggle to maintain consistency across channels and face content burnout due to manual repurposing of the same information.
+
+---
+
+## The Solution
+
+The Autonomous Content Factory is an AI-powered multi-agent system that converts a single input document into a complete marketing campaign.
+
+The system uses three agents:
+
+* Researcher: Extracts key insights from the input document
+* Copywriter: Generates content for blog, social media, and email
+* Editor: Refines content for clarity, tone, and consistency
+
+Key features:
+
+* Multi-agent pipeline workflow
+* Section-wise regeneration (blog, social thread, email)
+* Human-in-the-loop approval system
+* Real-time agent activity logs
+* File upload support (.txt, .md)
+* One-click export (ZIP and clipboard)
+* Responsive preview
+
+---
+
+## Tech Stack
+
+Programming Languages:
+
+* JavaScript
+* TypeScript
+
+Frameworks and Libraries:
+
+* Next.js (App Router)
+* React
+* Tailwind CSS
+* Framer Motion
+
+APIs:
+
+* Groq API (LLaMA 3.3 70B model)
+
+Utilities:
+
+* JSZip
+* FileSaver.js
+
+---
+
+## Setup Instructions
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/steffilazar/autonomous-content-factory.git
+cd autonomous-content-factory
+```
+
+2. Install dependencies
+
+```bash
+npm install
+```
+
+3. Add environment variables
+   Create a `.env.local` file and add:
+
+```env
+GROQ_API_KEY=your_api_key_here
+```
+
+4. Run the project
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open in browser
+   http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Video Demo
 
-## Learn More
+https://www.loom.com/share/4e70e6daa8604a64be21484b06d4b81d
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Live Demo (Optional)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add your deployed application link here.
