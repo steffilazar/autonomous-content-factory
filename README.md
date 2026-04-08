@@ -100,4 +100,4 @@ https://www.loom.com/share/4e70e6daa8604a64be21484b06d4b81d
 
 ## Live Demo (Optional)
 
-Add your deployed application link here.
+autonomous-content-factory-git-main-steffi-lazars-projects.vercel.app
