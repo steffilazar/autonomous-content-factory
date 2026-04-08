@@ -38,7 +38,6 @@ Key features:
 
 Programming Languages:
 
-* JavaScript
 * TypeScript
 
 Frameworks and Libraries:
